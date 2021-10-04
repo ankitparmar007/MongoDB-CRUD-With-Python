@@ -1,11 +1,11 @@
 {
     "builds": [{
-        "src": "/server/api.py",
+        "src": "/api.py",
         "use": "@now/python"
     }],
     "routes": [{
         "src": "/(.*)",
-        "dest": "server/api.py",
+        "dest": "api.py",
         "headers": {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": "true",
