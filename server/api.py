@@ -95,9 +95,8 @@ async def readUsername(userEmail: str = "",userPassword:str=""):
             return {"errors": "Incorrect Password"}
     else:
         print("User not Found")
-        return {"errors": "User not Found"}
-        
-readUsername("ankit@gmail.com","hellopassword")
+        return {"errors": "User not Found"}   
+    # readUsername("ankit@gmail.com","hellopassword")
 
 @app.get("/updateUsername/")
 async def updateUser(userEmail: str = "",userName:str="",userPassword:str=""):
