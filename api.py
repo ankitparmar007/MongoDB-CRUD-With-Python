@@ -26,6 +26,7 @@ client = pymongo.MongoClient(
 #db object
 db = client[dbname]
 
+
 #db access single collection
 collection = db["user_list"]
 
@@ -91,8 +92,10 @@ async def readUsername(readDeleteUserModel:ReadDeleteUserModel):
     if find_user_doc > 0:
         check_user_password = collection.count_documents({"user_email":readDeleteUserModel.userEmail,"user_password":readDeleteUserModel.userPassword}, limit = 1)
         if check_user_password>0:
+            user_data = collection.find_one({"user_email":readDeleteUserModel.userEmail,"user_password":readDeleteUserModel.userPassword},{"_id":0})
+            print(user_data)
             print("login success")
-            return {"errors": ""}
+            return {"errors": "","userEmail":user_data["user_email"],"userName":user_data["user_name"],"userPassword":user_data["user_password"]}
 
         else:
             print("Incorrect Password")
