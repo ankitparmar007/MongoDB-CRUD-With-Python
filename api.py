@@ -29,48 +29,52 @@ db = client[dbname]
 #db access single collection
 collection = db["user_list"]
 
-class UserModel(BaseModel):
+class CreateUpdateUserModel(BaseModel):
     userName: str
     userEmail: str
     userPassword:str
  
+
+class ReadDeleteUserModel(BaseModel):
+    userEmail: str
+    userPassword:str
 
 @app.get("/")
 async def read_root():
     return "Api Working"
 
 """Create New User Get"""
-@app.get("/createNewUser/")
-async def createNewUserGet(userEmail: str = "",userName:str="",userPassword:str=""):
-    try:
-        find_user_doc = collection.count_documents({"user_email":userEmail}, limit = 1)
-        if find_user_doc > 0:
-            print("Email Already Exists")
-            return {"errors": "Email Already Exists try to login"}
-        else:
-            insert_obj = collection.insert_one(
-                {'user_email': userEmail,"user_name":userName,"user_password":userPassword})
-            if insert_obj.acknowledged:
-                return {"errors": ""}
-            else:
-                return {"errors": "User not added"}
-    except pymongo.errors.PyMongoError as e:
-        print(f"Error in createNewUserGet due to mongo = {e}")
-        return {"errors": "User not added"}
+# @app.get("/createNewUser/")
+# async def createNewUserGet(userEmail: str = "",userName:str="",userPassword:str=""):
+#     try:
+#         find_user_doc = collection.count_documents({"user_email":userEmail}, limit = 1)
+#         if find_user_doc > 0:
+#             print("Email Already Exists")
+#             return {"errors": "Email Already Exists try to login"}
+#         else:
+#             insert_obj = collection.insert_one(
+#                 {'user_email': userEmail,"user_name":userName,"user_password":userPassword})
+#             if insert_obj.acknowledged:
+#                 return {"errors": ""}
+#             else:
+#                 return {"errors": "User not added"}
+#     except pymongo.errors.PyMongoError as e:
+#         print(f"Error in createNewUserGet due to mongo = {e}")
+#         return {"errors": "User not added"}
     # createNewUserGet("ankit@gmail.com","ankit","hellopassword")
 
 
 """Create New User Post"""
-@app.post("/createNewUserPost/")
-async def createNewUserGet(userModel:UserModel):
+@app.post("/createNewUser/")
+async def createNewUserGet(createUpdateUserModel:CreateUpdateUserModel):
     try:
-        find_user_doc = collection.count_documents({"user_email":userModel.userEmail}, limit = 1)
+        find_user_doc = collection.count_documents({"user_email":createUpdateUserModel.userEmail}, limit = 1)
         if find_user_doc > 0:
             print("Email Already Exists")
             return {"errors": "Email Already Exists try to login"}
         else:
             insert_obj = collection.insert_one(
-                {'user_email': userModel.userEmail,"user_name":userModel.userName,"user_password":userModel.userPassword})
+                {'user_email': createUpdateUserModel.userEmail,"user_name":createUpdateUserModel.userName,"user_password":createUpdateUserModel.userPassword})
             if insert_obj.acknowledged:
                 return {"errors": ""}
             else:
@@ -81,11 +85,11 @@ async def createNewUserGet(userModel:UserModel):
     # createNewUserGet("ankit@gmail.com","ankit","hellopassword")
 
 
-@app.get("/readUsername/")
-async def readUsername(userEmail: str = "",userPassword:str=""):
-    find_user_doc = collection.count_documents({"user_email":userEmail}, limit = 1)
+@app.post("/readUsername/")
+async def readUsername(readDeleteUserModel:ReadDeleteUserModel):
+    find_user_doc = collection.count_documents({"user_email":readDeleteUserModel.userEmail}, limit = 1)
     if find_user_doc > 0:
-        check_user_password = collection.count_documents({"user_email":userEmail,"user_password":userPassword}, limit = 1)
+        check_user_password = collection.count_documents({"user_email":readDeleteUserModel.userEmail,"user_password":readDeleteUserModel.userPassword}, limit = 1)
         if check_user_password>0:
             print("login success")
             return {"errors": ""}
@@ -98,16 +102,16 @@ async def readUsername(userEmail: str = "",userPassword:str=""):
         return {"errors": "User not Found"}   
     # readUsername("ankit@gmail.com","hellopassword")
 
-@app.get("/updateUsername/")
-async def updateUser(userEmail: str = "",userName:str="",userPassword:str=""):
+@app.post("/updateUsername/")
+async def updateUser(createUpdateUserModel:CreateUpdateUserModel):
     update_obj = collection.update_one(
         {
-            "user_email": userEmail,
-            "user_password": userPassword
+            "user_email": createUpdateUserModel.userEmail,
+            "user_password": createUpdateUserModel.userPassword
         },
         {
             "$set": {
-                "user_name": userName
+                "user_name": createUpdateUserModel.userName
             }
         }
     )
@@ -119,9 +123,9 @@ async def updateUser(userEmail: str = "",userName:str="",userPassword:str=""):
 
 
 
-@app.get("/deleteUser/")
-async def deleteUser(userEmail: str = "",userPassword:str=""):
-    delete_obj = collection.delete_one({"user_email":userEmail,"user_password":userPassword})
+@app.post("/deleteUser/")
+async def deleteUser(readDeleteUserModel:ReadDeleteUserModel):
+    delete_obj = collection.delete_one({"user_email":readDeleteUserModel.userEmail,"user_password":readDeleteUserModel.userPassword})
     #print(delete_obj.deleted_count)
     if delete_obj.deleted_count >0 :
         return {"errors": ""}
