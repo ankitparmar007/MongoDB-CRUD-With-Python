@@ -42,7 +42,7 @@ class ReadDeleteUserModel(BaseModel):
 
 @app.get("/")
 async def read_root():
-    return "Api Working"
+    return "Api Working Now"
 
 
 
