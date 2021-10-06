@@ -44,25 +44,7 @@ class ReadDeleteUserModel(BaseModel):
 async def read_root():
     return "Api Working"
 
-"""Create New User Get"""
-# @app.get("/createNewUser/")
-# async def createNewUserGet(userEmail: str = "",userName:str="",userPassword:str=""):
-#     try:
-#         find_user_doc = collection.count_documents({"user_email":userEmail}, limit = 1)
-#         if find_user_doc > 0:
-#             print("Email Already Exists")
-#             return {"errors": "Email Already Exists try to login"}
-#         else:
-#             insert_obj = collection.insert_one(
-#                 {'user_email': userEmail,"user_name":userName,"user_password":userPassword})
-#             if insert_obj.acknowledged:
-#                 return {"errors": ""}
-#             else:
-#                 return {"errors": "User not added"}
-#     except pymongo.errors.PyMongoError as e:
-#         print(f"Error in createNewUserGet due to mongo = {e}")
-#         return {"errors": "User not added"}
-    # createNewUserGet("ankit@gmail.com","ankit","hellopassword")
+
 
 
 """Create New User Post"""
@@ -128,13 +110,16 @@ async def updateUser(createUpdateUserModel:CreateUpdateUserModel):
 
 @app.post("/deleteUser/")
 async def deleteUser(readDeleteUserModel:ReadDeleteUserModel):
-    delete_obj = collection.delete_one({"user_email":readDeleteUserModel.userEmail,"user_password":readDeleteUserModel.userPassword})
-    #print(delete_obj.deleted_count)
-    if delete_obj.deleted_count >0 :
-        return {"errors": ""}
-    else:
-        return {"errors": "Unable to Delete, Username Or Password is Incorrect !"}
-
+    try:
+        delete_obj = collection.delete_one({"user_email":readDeleteUserModel.userEmail,"user_password":readDeleteUserModel.userPassword})
+        #print(delete_obj.deleted_count)
+        if delete_obj.deleted_count >0 :
+            return {"errors": ""}
+        else:
+            return {"errors": "Unable to Delete, Username Or Password is Incorrect !"}
+    except pymongo.errors.PyMongoError as e:
+        print(f"Error in deleteUser due to mongo = {e}")
+        return {"errors": "User not added"}
     # deleteUser("ankit@gmail.co","hellopassword")
 
 
@@ -144,7 +129,9 @@ async def deleteUser(readDeleteUserModel:ReadDeleteUserModel):
 def allCollection():
     allCollections = db.list_collection_names()
     print(allCollections)
-    # allCollection()
+
+
+# allCollection()
 
 
 """Create Collection"""
@@ -153,4 +140,5 @@ def createCollection(col_name):
         db.create_collection(col_name)
     except pymongo.errors.PyMongoError as e:
         print(f"Error in createCollection = {e}")
-    # createCollection("cool_connection")
+        
+createCollection("my_new_collection")
