@@ -4,3 +4,4 @@ vercel copy.json
 demo.json
 __pycache__/api.cpython-39.pyc
 usefull links.txt
+config.py
